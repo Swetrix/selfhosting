@@ -19,7 +19,7 @@ services:
     restart: always
     container_name: swetrix-api
     ports:
-      - '8080:5005'
+      - '8080:8080'
     environment:
       - JWT_ACCESS_TOKEN_SECRET=jwt-access-token-secret
       - JWT_REFRESH_TOKEN_SECRET=jwt-refresh-token-secret
