@@ -1,12 +1,26 @@
-# This is a simple example that forwards 8080 port to the internal 80 port
+# This is a simple example that forwards 8080 port to the internal 80 port and respective ports for the API
 server {
-  listen 8081;
-  listen [::]:8081;
+  listen 80;
+  listen [::]:80;
   # server_name swetrix.yourdomain.com;
   server_name _;
 
   location / {
-    proxy_pass http://localhost:80;
+    proxy_pass http://localhost:8081;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+
+server {
+  listen 8080;
+  listen [::]:8080;
+  # server_name swetrix.yourdomain.com;
+  server_name _;
+
+  location / {
+    proxy_pass http://localhost:5005;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
