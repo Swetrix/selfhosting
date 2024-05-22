@@ -29,6 +29,7 @@ services:
       - EMAIL=test@test.com
       - PASSWORD=12345678
       - API_KEY=
+      - CLOUDFLARE_PROXY_ENABLED=false
     links:
       - 'redis'
       - 'clickhouse'
