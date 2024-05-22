@@ -2,20 +2,20 @@ version: '3.9'
 services:
   # This is the frontend, you can remove it if you want
   swetrix:
-    image: swetrix/swetrix-fe:v2.1.0
+    image: swetrixfe:v3.0.0-rc.1
     restart: always
     depends_on:
       - swetrix-api
     ports:
-      - '80:80'
+      - '80:3000'
     environment:
       - API_URL=http://localhost:8080/
-      - REACT_APP_AIAPI_URL=https://aiapi.swetrix.com/
-      - REACT_APP_SELFHOSTED=true
+      - AIAPI_URL=https://aiapi.swetrix.com/
+      - SELFHOSTED=true
 
   # This is the analytics API
   swetrix-api:
-    image: swetrix/swetrix-api:v2.1.2
+    image: swetrixapi:v3.0.0-rc.1
     restart: always
     container_name: swetrix-api
     ports:
@@ -28,6 +28,7 @@ services:
       - API_ORIGINS=
       - EMAIL=test@test.com
       - PASSWORD=12345678
+      - API_KEY=
     links:
       - 'redis'
       - 'clickhouse'
@@ -35,7 +36,7 @@ services:
       - 'redis'
       - 'clickhouse'
   redis:
-    image: redis:7.0.11-alpine
+    image: redis:7.2-alpine
     restart: always
     environment:
       - REDIS_PORT=6379
@@ -46,7 +47,7 @@ services:
   #   volumes:
   #     - '/opt/redis-volume:/data'
   clickhouse:
-    image: clickhouse/clickhouse-server:23.4.2.11-alpine
+    image: clickhouse/clickhouse-server:23.8-alpine
     container_name: clickhouse
     environment:
       - CLICKHOUSE_DATABASE=analytics
