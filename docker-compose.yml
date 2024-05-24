@@ -10,7 +10,6 @@ services:
       - '80:3000'
     environment:
       - API_URL=http://localhost:8080/
-      - AIAPI_URL=https://aiapi.swetrix.com/
       - SELFHOSTED=true
 
   # This is the analytics API
