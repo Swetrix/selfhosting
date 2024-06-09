@@ -2,7 +2,7 @@ version: '3.9'
 services:
   # This is the frontend, you can remove it if you want
   swetrix:
-    image: swetrixfe:v3.0.0-rc.1
+    image: swetrixfe:v3.0.0
     restart: always
     depends_on:
       - swetrix-api
@@ -14,7 +14,7 @@ services:
 
   # This is the analytics API
   swetrix-api:
-    image: swetrixapi:v3.0.0-rc.1
+    image: swetrixapi:v3.0.1
     restart: always
     container_name: swetrix-api
     ports:
