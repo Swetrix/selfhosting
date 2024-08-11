@@ -2,7 +2,7 @@ version: '3.9'
 services:
   # This is the frontend, you can remove it if you want
   swetrix:
-    image: swetrix/swetrix-fe:v3.1.0
+    image: swetrix/swetrix-fe:v3.2.0
     restart: always
     depends_on:
       - swetrix-api
@@ -14,7 +14,7 @@ services:
 
   # This is the analytics API
   swetrix-api:
-    image: swetrix/swetrix-api:v3.1.0
+    image: swetrix/swetrix-api:v3.2.0
     restart: always
     container_name: swetrix-api
     ports:
@@ -28,6 +28,7 @@ services:
       - EMAIL=test@test.com
       - PASSWORD=12345678
       - API_KEY=
+      - DEBUG_MODE=false
       - CLOUDFLARE_PROXY_ENABLED=false
     links:
       - 'redis'
