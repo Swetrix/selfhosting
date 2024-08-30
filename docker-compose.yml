@@ -50,6 +50,8 @@ services:
   clickhouse:
     image: clickhouse/clickhouse-server:24.8-alpine
     container_name: clickhouse
+    cap_add:
+      - SYS_NICE
     environment:
       - CLICKHOUSE_DATABASE=analytics
       - CLICKHOUSE_USER=default
