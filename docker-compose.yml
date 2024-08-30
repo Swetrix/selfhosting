@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   # This is the frontend, you can remove it if you want
   swetrix:
