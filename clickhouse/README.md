@@ -1,4 +1,4 @@
-This folder contains Clickhouse configurations to optimise the performance of the database.
+This folder contains Clickhouse configurations to optimise the performance of the database. You can apply them by mounting the files to the corresponding locations in the Clickhouse container depending on your needs.
 
 ## disable-user-logging.xml
 
