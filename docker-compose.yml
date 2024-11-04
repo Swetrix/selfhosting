@@ -62,8 +62,13 @@ services:
     restart: always
     volumes:
       - swetrix-events-data:/var/lib/clickhouse
+      # Disable logging
       - ./clickhouse/reduce-logs.xml:/etc/clickhouse-server/config.d/reduce-logs.xml:ro
       - ./clickhouse/disable-user-logging.xml:/etc/clickhouse-server/users.d/disable-user-logging.xml:ro
+
+      # Reduce RAM usage
+      - ./clickhouse/preserve-ram-config.xml:/etc/clickhouse-server/config.d/preserve-ram-config.xml:ro
+      - ./clickhouse/preserve-ram-user.xml:/etc/clickhouse-server/users.d/preserve-ram-user.xml:ro
     ulimits:
       nofile:
         soft: 262144
