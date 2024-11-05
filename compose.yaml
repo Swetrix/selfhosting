@@ -42,11 +42,11 @@ services:
     environment:
       - REDIS_PORT=6379
       - REDIS_USER=default
-      - REDIS_PASSWORD=
-    # ports:
-    #   - 6379:6379
-  #   volumes:
-  #     - '/opt/redis-volume:/data'
+      - REDIS_PASSWORD
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 30s
+      start_period: 1m
 
   clickhouse:
     image: clickhouse/clickhouse-server:24.8-alpine
@@ -55,9 +55,10 @@ services:
       - CLICKHOUSE_DATABASE=analytics
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PORT=8123
-      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_PASSWORD
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1"]
+      interval: 30s
       start_period: 1m
     restart: always
     volumes:
