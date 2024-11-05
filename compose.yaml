@@ -33,8 +33,10 @@ services:
       - 'redis'
       - 'clickhouse'
     depends_on:
-      - 'redis'
-      - 'clickhouse'
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
 
   redis:
     image: redis:7.2-alpine
