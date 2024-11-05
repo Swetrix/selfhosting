@@ -56,8 +56,9 @@ services:
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PORT=8123
       - CLICKHOUSE_PASSWORD=
-    # ports:
-    #   - 8123:8123
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1"]
+      start_period: 1m
     restart: always
     volumes:
       - swetrix-events-data:/var/lib/clickhouse
