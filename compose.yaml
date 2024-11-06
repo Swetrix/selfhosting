@@ -61,7 +61,7 @@ services:
       start_period: 1m
 
   clickhouse:
-    image: clickhouse/clickhouse-server:24.8-alpine
+    image: clickhouse/clickhouse-server:24.10-alpine
     container_name: clickhouse
     environment:
       - CLICKHOUSE_DATABASE=analytics
