@@ -99,11 +99,6 @@ while true; do
   fi
 done
 
-# API Key (optional)
-echo
-read -p "Enter API_KEY (optional): " api_key
-echo "API_KEY=$api_key" >> .env
-
 # Cloudflare proxy
 echo
 read -p "Enable Cloudflare proxy? (y/N): " -n 1 -r
@@ -116,6 +111,7 @@ fi
 
 # Debug mode (always false)
 echo "DEBUG_MODE=false" >> .env
+echo "API_KEY=" >> .env
 
 echo -e "\n${GREEN}Configuration complete! .env file has been created.${NC}"
 echo -e "${YELLOW}Note: Make sure to review the .env file before starting the application.${NC}"
