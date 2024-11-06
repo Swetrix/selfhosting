@@ -8,8 +8,7 @@ services:
     ports:
       - '80:3000'
     environment:
-      - API_URL=http://localhost:8080/
-      - SELFHOSTED=true
+      - API_URL=${API_URL}
 
   # This is Swetrix API, it's purpose is to collect incoming analytical events and serve the data to the UI
   swetrix-api:
@@ -19,16 +18,18 @@ services:
     ports:
       - '8080:5005'
     environment:
-      - JWT_ACCESS_TOKEN_SECRET=jwt-access-token-secret
-      - JWT_REFRESH_TOKEN_SECRET=jwt-refresh-token-secret
+      # Configurable with .env file
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - EMAIL=${EMAIL}
+      - PASSWORD=${PASSWORD}
+      - API_KEY=${API_KEY}
+      - DEBUG_MODE=${DEBUG_MODE}
+      - CLOUDFLARE_PROXY_ENABLED=${CLOUDFLARE_PROXY_ENABLED}
+
+      # Redis and Clickhouse are required for the API to work
       - REDIS_HOST=redis
       - CLICKHOUSE_HOST=http://clickhouse
-      - API_ORIGINS=
-      - EMAIL=test@test.com
-      - PASSWORD=12345678
-      - API_KEY=
-      - DEBUG_MODE=false
-      - CLOUDFLARE_PROXY_ENABLED=false
     links:
       - 'redis'
       - 'clickhouse'
