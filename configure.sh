@@ -112,6 +112,7 @@ fi
 # Debug mode (always false)
 echo "DEBUG_MODE=false" >> .env
 echo "API_KEY=" >> .env
+echo "IP_GEOLOCATION_DB_PATH=" >> .env
 
 echo -e "\n${GREEN}Configuration complete! .env file has been created.${NC}"
 echo -e "${YELLOW}Note: Make sure to review the .env file before starting the application.${NC}"
