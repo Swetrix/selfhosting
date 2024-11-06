@@ -46,7 +46,7 @@ echo -e "\n# swetrix image" >> .env
 # API_URL
 while true; do
 	echo
-  read -p "Enter API_URL (required, e.g., https://api.swetrix.example.com): " api_url
+  read -p "Enter API_URL of your Swetrix API instance (required, e.g., https://api.swetrix.example.com): " api_url
   if [ -n "$api_url" ]; then
     echo "API_URL=$api_url" >> .env
     break
