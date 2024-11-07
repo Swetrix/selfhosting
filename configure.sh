@@ -38,10 +38,9 @@ if [ -f .env ]; then
 fi
 
 # Create/overwrite .env file
-echo "# Swetrix configuration" > .env
 echo -e "${GREEN}Creating new .env file...${NC}"
 
-echo -e "\n# swetrix image" >> .env
+echo -e "# Swetrix Frontend configuration" >> .env
 
 # API_URL
 while true; do
@@ -55,7 +54,7 @@ while true; do
   fi
 done
 
-echo -e "\n# swetrix-api image" >> .env
+echo -e "\n# Swetrix API configuration" >> .env
 
 # JWT tokens
 echo
