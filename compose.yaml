@@ -73,6 +73,8 @@ services:
       interval: 30s
       start_period: 1m
     restart: always
+    cap_add:
+      - SYS_NICE
     volumes:
       - swetrix-events-data:/var/lib/clickhouse
       # Disable logging
