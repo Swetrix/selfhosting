@@ -1,7 +1,7 @@
 services:
   # This is Swetrix user interface application, it's used to display the analytics data, render charts, etc.
   swetrix:
-    image: swetrix/swetrix-fe:v3.2.0
+    image: swetrix/swetrix-fe:v3.3.0
     restart: always
     depends_on:
       - swetrix-api
@@ -16,7 +16,7 @@ services:
 
   # This is Swetrix API, it's purpose is to collect incoming analytical events and serve the data to the UI
   swetrix-api:
-    image: swetrix/swetrix-api:v3.2.3
+    image: swetrix/swetrix-api:v3.3.0
     restart: always
     container_name: swetrix-api
     ports:
