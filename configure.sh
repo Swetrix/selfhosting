@@ -40,7 +40,7 @@ fi
 # Create/overwrite .env file
 echo -e "${GREEN}Creating new .env file...${NC}"
 
-echo -e "# Swetrix Frontend configuration" >> .env
+echo -e "# Swetrix Frontend configuration" > .env
 
 # API_URL
 while true; do
@@ -112,6 +112,10 @@ fi
 echo "DEBUG_MODE=false" >> .env
 echo "API_KEY=" >> .env
 echo "IP_GEOLOCATION_DB_PATH=" >> .env
+
+echo -e "\n\n# Keep these empty unless you manually set passwords for your databases" >> .env
+echo "REDIS_PASSWORD=" >> .env
+echo "CLICKHOUSE_PASSWORD=" >> .env
 
 echo -e "\n${GREEN}Configuration complete! .env file has been created.${NC}"
 echo -e "${YELLOW}Note: Make sure to review the .env file before starting the application.${NC}"
