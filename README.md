@@ -24,4 +24,4 @@ cd selfhosting
 4. Run `docker compose up -d` to start the Swetrix services.
 5. After that, you will be able to access Swetrix web portal on the port you specified in `swetrix` category in `compose.yaml` (by default, it's set to `80`).
 
-And that's it! :) If you have any questions, feel free to join our [Discord community](https://discord.gg/ZVK8Tw2E8j). You can also star our [main repository](https://github.com/Swetrix/swetrix-api) as a token of appreciation.
+And that's it! :) If you have any questions, feel free to join our [Discord community](https://discord.gg/ZVK8Tw2E8j). You can also star our [main repository](https://github.com/Swetrix/swetrix) as a token of appreciation.
