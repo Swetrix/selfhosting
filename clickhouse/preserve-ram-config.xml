@@ -1,0 +1,4 @@
+<clickhouse>
+  <mark_cache_size>536870912</mark_cache_size>
+  <concurrent_threads_soft_limit_num>1</concurrent_threads_soft_limit_num>
+</clickhouse>

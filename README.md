@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://swetrix.com/assets/logo_white.png">
-  <img alt="" src="https://swetrix.com/assets/logo_blue.png" height="80">
+  <img alt="" src="https://swetrix.com/assets/logo_blue.png" width="360">
 </picture>
 <br /><br />
 
@@ -20,8 +20,8 @@ git clone https://github.com/swetrix/selfhosting
 cd selfhosting
 ```
 2. [Install Docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04?ref=swetrix.com) if you haven't already.
-3. Configure the environment variables in the `docker-compose.yml` file with your own values. A table explaining what each value means can be found [here](https://docs.swetrix.com/selfhosting/configuring).
+3. Configure the environment variables for your Swetrix instance. It can be easily done by running `./configure.sh` script, which will ask you to provide the necessary values and generate a `.env` file with them. A table explaining what each value means can be found [here](https://docs.swetrix.com/selfhosting/configuring).
 4. Run `docker compose up -d` to start the Swetrix services.
-5. After that, you will be able to access Swetrix web portal on the port you specified in `swetrix` category in `docker-compose.yml` (by default, it's set to `80`).
+5. After that, you will be able to access Swetrix web portal on the port you specified in `swetrix` category in `compose.yaml` (by default, it's set to `80`).
 
 And that's it! :) If you have any questions, feel free to join our [Discord community](https://discord.gg/ZVK8Tw2E8j). You can also star our [main repository](https://github.com/Swetrix/swetrix) as a token of appreciation.
