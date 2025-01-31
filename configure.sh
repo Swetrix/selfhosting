@@ -45,7 +45,7 @@ echo -e "# Swetrix Frontend configuration" > .env
 # API_URL
 while true; do
 	echo
-  read -p "Enter API_URL of your Swetrix API instance (required, e.g., https://api.swetrix.example.com): " api_url
+  read -e -p "Enter API_URL of your Swetrix API instance (required, e.g., https://api.swetrix.example.com): " api_url
   if [ -n "$api_url" ]; then
     echo "API_URL=$api_url" >> .env
     break
@@ -58,7 +58,7 @@ echo -e "\n# Swetrix API configuration" >> .env
 
 # JWT tokens
 echo
-read -p "Enter JWT_ACCESS_TOKEN_SECRET (press Enter to auto-generate): " jwt_access
+read -e -p "Enter JWT_ACCESS_TOKEN_SECRET (press Enter to auto-generate): " jwt_access
 if [ -z "$jwt_access" ]; then
   jwt_access=$(generate_random_string)
   echo -e "${GREEN}Generated JWT_ACCESS_TOKEN_SECRET${NC}"
@@ -66,7 +66,7 @@ fi
 echo "JWT_ACCESS_TOKEN_SECRET=$jwt_access" >> .env
 
 echo
-read -p "Enter JWT_REFRESH_TOKEN_SECRET (press Enter to auto-generate): " jwt_refresh
+read -e -p "Enter JWT_REFRESH_TOKEN_SECRET (press Enter to auto-generate): " jwt_refresh
 if [ -z "$jwt_refresh" ]; then
   jwt_refresh=$(generate_random_string)
   echo -e "${GREEN}Generated JWT_REFRESH_TOKEN_SECRET${NC}"
@@ -76,7 +76,7 @@ echo "JWT_REFRESH_TOKEN_SECRET=$jwt_refresh" >> .env
 # Email
 while true; do
   echo
-  read -p "Enter admin EMAIL (required): " email
+  read -e -p "Enter admin EMAIL (required): " email
   if [ -n "$email" ]; then
     echo "EMAIL=$email" >> .env
     break
