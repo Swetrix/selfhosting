@@ -4,7 +4,7 @@
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
-BLUE='\033[1;34m'  # Changed to light blue
+BLUE='\033[1;34m'
 NC='\033[0m' # No Color
 
 # ASCII art banner
@@ -26,8 +26,160 @@ generate_random_string() {
   openssl rand -base64 64 | tr -d '/+=' | cut -c1-64
 }
 
+# Helper: check if command exists
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Helper: OS detection
+is_macos() {
+  [ "$(uname -s)" = "Darwin" ]
+}
+
+is_debian_like() {
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if echo "$ID" | grep -qiE 'debian|ubuntu'; then
+      return 0
+    fi
+    if echo "$ID_LIKE" | grep -qi 'debian'; then
+      return 0
+    fi
+  fi
+  return 1
+}
+
+# Installer: Debian/Ubuntu via apt
+install_docker_apt() {
+  echo
+  read -p "Docker is not installed. Install Docker Engine via apt now? (Y/n) " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Nn]$ ]]; then
+    return 1
+  fi
+
+  echo -e "${GREEN}Installing Docker (requires sudo)...${NC}"
+  if ! sudo apt-get update; then
+    echo -e "${RED}apt-get update failed. Please install Docker manually.${NC}"
+    return 1
+  fi
+
+  # Prefer distro packages for simplicity and reliability
+  if ! sudo apt-get install -y docker.io; then
+    echo -e "${RED}Failed to install docker.io via apt. Please install Docker manually.${NC}"
+    return 1
+  fi
+
+  # Start and enable Docker if systemd is available
+  if command_exists systemctl; then
+    sudo systemctl enable --now docker 2>/dev/null || true
+  fi
+
+  # Allow current user to use docker without sudo (user must re-login)
+  if command_exists usermod; then
+    sudo usermod -aG docker "$USER" 2>/dev/null || true
+  fi
+
+  return 0
+}
+
+install_compose_apt() {
+  echo
+  read -p "Docker Compose is not installed. Install Compose plugin via apt now? (Y/n) " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Nn]$ ]]; then
+    return 1
+  fi
+
+  echo -e "${GREEN}Installing Docker Compose (requires sudo)...${NC}"
+
+  # Try the modern plugin first
+  if sudo apt-get update && sudo apt-get install -y docker-compose-plugin; then
+    return 0
+  fi
+
+  # Fallback to legacy docker-compose package if plugin not available
+  if sudo apt-get install -y docker-compose; then
+    return 0
+  fi
+
+  echo -e "${RED}Failed to install Docker Compose via apt. Please install it manually.${NC}"
+  return 1
+}
+
+print_manual_docker_instructions() {
+  echo -e "${YELLOW}Docker is required to run Swetrix via Docker Compose.${NC}"
+  if is_macos; then
+    echo "On macOS, install Docker Desktop:"
+    echo "  - Using Homebrew: brew install --cask docker"
+    echo "  - Or download: https://www.docker.com/products/docker-desktop/"
+    echo "After installation, start Docker Desktop."
+  else
+    echo "Please install Docker for your OS: https://docs.docker.com/engine/install/"
+  fi
+}
+
+print_manual_compose_instructions() {
+  echo -e "${YELLOW}Docker Compose is required. Install one of the following:${NC}"
+  if is_macos; then
+    echo "On macOS with Docker Desktop, 'docker compose' is included."
+    echo "Alternatively: brew install docker-compose"
+  else
+    echo "For Linux, prefer the Compose plugin (docker compose)."
+    echo "Docs: https://docs.docker.com/compose/install/"
+  fi
+}
+
+preflight_check() {
+  echo -e "${BLUE}Running preflight checks...${NC}"
+
+  # Docker check
+  if command_exists docker; then
+    echo -e "${GREEN}Docker found:$(docker --version 2>/dev/null | sed 's/^/ /')${NC}"
+  else
+    if is_debian_like; then
+      install_docker_apt || print_manual_docker_instructions
+    else
+      print_manual_docker_instructions
+    fi
+  fi
+
+  # Compose check (either 'docker compose' or 'docker-compose')
+  if docker compose version >/dev/null 2>&1; then
+    echo -e "${GREEN}Docker Compose (plugin) found: $(docker compose version 2>/dev/null | head -n1)${NC}"
+  elif command_exists docker-compose; then
+    echo -e "${GREEN}Docker Compose found: $(docker-compose --version 2>/dev/null)${NC}"
+  else
+    if is_debian_like; then
+      install_compose_apt || print_manual_compose_instructions
+    else
+      print_manual_compose_instructions
+    fi
+  fi
+
+  # Re-check and warn if still missing
+  missing=""
+  if ! command_exists docker; then
+    missing="docker"
+  fi
+  if ! docker compose version >/dev/null 2>&1 && ! command_exists docker-compose; then
+    if [ -n "$missing" ]; then
+      missing=", $missing compose"
+    else
+      missing="docker compose"
+    fi
+  fi
+  if [ -n "$missing" ]; then
+    echo -e "${YELLOW}Warning:${NC} Missing $missing. You can continue generating the .env, but you'll need to install these before running Swetrix."
+  fi
+}
+
+# Run preflight checks before configuration prompts
+preflight_check
+
 # Check if .env exists
 if [ -f .env ]; then
+  echo
   echo -e "${YELLOW}Warning: .env file already exists!${NC}"
   read -p "Do you want to continue and overwrite it? (y/N) " -n 1 -r
   echo
@@ -38,6 +190,7 @@ if [ -f .env ]; then
 fi
 
 # Create/overwrite .env file
+echo
 echo -e "${GREEN}Creating new .env file...${NC}"
 
 echo -e "# Swetrix Frontend configuration" > .env
