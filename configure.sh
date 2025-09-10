@@ -239,6 +239,7 @@ fi
 # Debug mode (always false)
 echo "DEBUG_MODE=false" >> .env
 echo "IP_GEOLOCATION_DB_PATH=" >> .env
+echo "DISABLE_REGISTRATION=true" >> .env
 
 echo -e "\n\n# Keep these empty unless you manually set passwords for your databases" >> .env
 echo "REDIS_PASSWORD=" >> .env
