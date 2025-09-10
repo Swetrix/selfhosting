@@ -226,31 +226,6 @@ if [ -z "$jwt_refresh" ]; then
 fi
 echo "JWT_REFRESH_TOKEN_SECRET=$jwt_refresh" >> .env
 
-# Email
-while true; do
-  echo
-  read -e -p "Enter admin EMAIL (required): " email
-  if [ -n "$email" ]; then
-    echo "EMAIL=$email" >> .env
-    break
-  else
-    echo -e "${RED}Email is required. Please enter a value.${NC}"
-  fi
-done
-
-# Password
-while true; do
-  echo
-  read -s -p "Enter admin PASSWORD (required, min 8 characters): " password
-  echo
-  if [ ${#password} -ge 8 ]; then
-    echo "PASSWORD=$password" >> .env
-    break
-  else
-    echo -e "${RED}Password must be at least 8 characters long.${NC}"
-  fi
-done
-
 # Cloudflare proxy
 echo
 read -p "Enable Cloudflare proxy? (y/N): " -n 1 -r
@@ -263,7 +238,6 @@ fi
 
 # Debug mode (always false)
 echo "DEBUG_MODE=false" >> .env
-echo "API_KEY=" >> .env
 echo "IP_GEOLOCATION_DB_PATH=" >> .env
 
 echo -e "\n\n# Keep these empty unless you manually set passwords for your databases" >> .env
