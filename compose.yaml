@@ -28,12 +28,24 @@ services:
     environment:
       # Configurable with .env file
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
-      - EMAIL=${EMAIL}
-      - PASSWORD=${PASSWORD}
-      - API_KEY=${API_KEY}
       - IP_GEOLOCATION_DB_PATH=${IP_GEOLOCATION_DB_PATH}
       - DEBUG_MODE=${DEBUG_MODE}
       - CLOUDFLARE_PROXY_ENABLED=${CLOUDFLARE_PROXY_ENABLED}
+
+      # Emails configuration (SMTP)
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - SMTP_MOCK=${SMTP_MOCK}
+
+      # OIDC configuration
+      - OIDC_ENABLED=${OIDC_ENABLED}
+      - OIDC_ONLY_AUTH=${OIDC_ONLY_AUTH}
+      - OIDC_DISCOVERY_URL=${OIDC_DISCOVERY_URL}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
 
       # Redis and Clickhouse are required for the API to work
       - REDIS_HOST=redis
