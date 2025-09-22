@@ -17,13 +17,13 @@ echo
 echo -e "${NC}"
 
 # Tool description
-echo -e "Welcome to the Swetrix configuration tool!"
-echo -e "This utility helps you set up your Swetrix environment by configuring essential parameters"
+echo -e "Welcome to the Swetrix CE configuration tool!"
+echo -e "This utility helps you set up your Swetrix CE environment by configuring essential parameters"
 echo -e "and generating secure credentials for your installation to get you started as quickly as possible.\n"
 
 # Function to generate a random string
 generate_random_string() {
-  openssl rand -base64 64 | tr -d '/+=' | cut -c1-64
+  openssl rand -base64 48
 }
 
 # Helper: check if command exists
@@ -209,22 +209,14 @@ done
 
 echo -e "\n# Swetrix API configuration" >> .env
 
-# JWT tokens
+# Secret key base
 echo
-read -e -p "Enter JWT_ACCESS_TOKEN_SECRET (press Enter to auto-generate): " jwt_access
-if [ -z "$jwt_access" ]; then
-  jwt_access=$(generate_random_string)
-  echo -e "${GREEN}Generated JWT_ACCESS_TOKEN_SECRET${NC}"
+read -e -p "Enter SECRET_KEY_BASE (press Enter to auto-generate): " secret_key_base
+if [ -z "$secret_key_base" ]; then
+  secret_key_base=$(generate_random_string)
+  echo -e "${GREEN}Generated SECRET_KEY_BASE${NC}"
 fi
-echo "JWT_ACCESS_TOKEN_SECRET=$jwt_access" >> .env
-
-echo
-read -e -p "Enter JWT_REFRESH_TOKEN_SECRET (press Enter to auto-generate): " jwt_refresh
-if [ -z "$jwt_refresh" ]; then
-  jwt_refresh=$(generate_random_string)
-  echo -e "${GREEN}Generated JWT_REFRESH_TOKEN_SECRET${NC}"
-fi
-echo "JWT_REFRESH_TOKEN_SECRET=$jwt_refresh" >> .env
+echo "SECRET_KEY_BASE=$secret_key_base" >> .env
 
 # Cloudflare proxy
 echo

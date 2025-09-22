@@ -6,11 +6,15 @@ services:
     depends_on:
       - swetrix-api
     ports:
-      - '80:3000'
+      - "80:3000"
     environment:
       - API_URL=${API_URL}
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/ping || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3000/ping || exit 1",
+        ]
       interval: 30s
       start_period: 15s
 
@@ -20,11 +24,10 @@ services:
     restart: always
     container_name: swetrix-api
     ports:
-      - '8080:5005'
+      - "8080:5005"
     environment:
       # Configurable with .env file
-      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
-      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - EMAIL=${EMAIL}
       - PASSWORD=${PASSWORD}
       - API_KEY=${API_KEY}
@@ -36,15 +39,19 @@ services:
       - REDIS_HOST=redis
       - CLICKHOUSE_HOST=http://clickhouse
     links:
-      - 'redis'
-      - 'clickhouse'
+      - "redis"
+      - "clickhouse"
     depends_on:
       redis:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5005/ping || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:5005/ping || exit 1",
+        ]
       interval: 30s
       start_period: 15s
 
@@ -69,7 +76,11 @@ services:
       - CLICKHOUSE_PORT=8123
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1",
+        ]
       interval: 30s
       start_period: 1m
     restart: always
