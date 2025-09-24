@@ -69,7 +69,7 @@ services:
       start_period: 15s
 
   redis:
-    image: redis:7.2-alpine
+    image: redis:8.2-alpine
     restart: always
     environment:
       - REDIS_PORT=6379
@@ -81,7 +81,7 @@ services:
       start_period: 1m
 
   clickhouse:
-    image: clickhouse/clickhouse-server:24.10-alpine
+    image: clickhouse/clickhouse-server:25.8-alpine
     container_name: clickhouse
     environment:
       - CLICKHOUSE_DATABASE=analytics
