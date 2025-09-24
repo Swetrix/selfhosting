@@ -49,6 +49,49 @@ is_debian_like() {
   return 1
 }
 
+# Configure Docker's official APT repository (Ubuntu/Debian)
+configure_docker_apt_repository() {
+  if ! is_debian_like; then
+    return 1
+  fi
+
+  echo -e "${BLUE}Configuring Docker APT repository...${NC}"
+
+  # Identify distro path and codename for the repo
+  . /etc/os-release
+  distro_path="ubuntu"
+  codename="${UBUNTU_CODENAME:-$VERSION_CODENAME}"
+  if echo "$ID" | grep -qi 'debian'; then
+    distro_path="debian"
+    codename="$VERSION_CODENAME"
+  fi
+
+  # Ensure prerequisites
+  sudo apt-get update -y >/dev/null 2>&1 || true
+  sudo apt-get install -y ca-certificates curl gnupg >/dev/null 2>&1 || true
+
+  # Setup keyring
+  sudo install -m 0755 -d /etc/apt/keyrings 2>/dev/null || true
+  if ! sudo curl -fsSL "https://download.docker.com/linux/${distro_path}/gpg" -o /etc/apt/keyrings/docker.asc; then
+    echo -e "${YELLOW}Warning:${NC} Failed to download Docker GPG key. Continuing without repo configuration."
+    return 1
+  fi
+  sudo chmod a+r /etc/apt/keyrings/docker.asc 2>/dev/null || true
+
+  # Write sources list
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/${distro_path} ${codename} stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+  # Update package lists
+  if ! sudo apt-get update; then
+    echo -e "${YELLOW}Warning:${NC} apt-get update failed after adding Docker repo."
+    return 1
+  fi
+
+  echo -e "${GREEN}Docker APT repository configured (${distro_path} ${codename}).${NC}"
+  return 0
+}
+
 # Installer: Debian/Ubuntu via apt
 install_docker_apt() {
   echo
@@ -93,14 +136,27 @@ install_compose_apt() {
 
   echo -e "${GREEN}Installing Docker Compose (requires sudo)...${NC}"
 
-  # Try the modern plugin first
+  # Try the modern plugin first from current repos
   if sudo apt-get update && sudo apt-get install -y docker-compose-plugin; then
-    return 0
+    if docker compose version >/dev/null 2>&1; then
+      return 0
+    fi
+  fi
+
+  # Configure Docker's official repo and retry (per docs)
+  if configure_docker_apt_repository; then
+    if sudo apt-get install -y docker-compose-plugin; then
+      if docker compose version >/dev/null 2>&1; then
+        return 0
+      fi
+    fi
   fi
 
   # Fallback to legacy docker-compose package if plugin not available
   if sudo apt-get install -y docker-compose; then
-    return 0
+    if command_exists docker-compose; then
+      return 0
+    fi
   fi
 
   echo -e "${RED}Failed to install Docker Compose via apt. Please install it manually.${NC}"
