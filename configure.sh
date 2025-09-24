@@ -17,13 +17,13 @@ echo
 echo -e "${NC}"
 
 # Tool description
-echo -e "Welcome to the Swetrix configuration tool!"
-echo -e "This utility helps you set up your Swetrix environment by configuring essential parameters"
+echo -e "Welcome to the Swetrix CE configuration tool!"
+echo -e "This utility helps you set up your Swetrix CE environment by configuring essential parameters"
 echo -e "and generating secure credentials for your installation to get you started as quickly as possible.\n"
 
 # Function to generate a random string
 generate_random_string() {
-  openssl rand -base64 64 | tr -d '/+=' | cut -c1-64
+  openssl rand -base64 48
 }
 
 # Helper: check if command exists
@@ -47,6 +47,49 @@ is_debian_like() {
     fi
   fi
   return 1
+}
+
+# Configure Docker's official APT repository (Ubuntu/Debian)
+configure_docker_apt_repository() {
+  if ! is_debian_like; then
+    return 1
+  fi
+
+  echo -e "${BLUE}Configuring Docker APT repository...${NC}"
+
+  # Identify distro path and codename for the repo
+  . /etc/os-release
+  distro_path="ubuntu"
+  codename="${UBUNTU_CODENAME:-$VERSION_CODENAME}"
+  if echo "$ID" | grep -qi 'debian'; then
+    distro_path="debian"
+    codename="$VERSION_CODENAME"
+  fi
+
+  # Ensure prerequisites
+  sudo apt-get update -y >/dev/null 2>&1 || true
+  sudo apt-get install -y ca-certificates curl gnupg >/dev/null 2>&1 || true
+
+  # Setup keyring
+  sudo install -m 0755 -d /etc/apt/keyrings 2>/dev/null || true
+  if ! sudo curl -fsSL "https://download.docker.com/linux/${distro_path}/gpg" -o /etc/apt/keyrings/docker.asc; then
+    echo -e "${YELLOW}Warning:${NC} Failed to download Docker GPG key. Continuing without repo configuration."
+    return 1
+  fi
+  sudo chmod a+r /etc/apt/keyrings/docker.asc 2>/dev/null || true
+
+  # Write sources list
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/${distro_path} ${codename} stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+  # Update package lists
+  if ! sudo apt-get update; then
+    echo -e "${YELLOW}Warning:${NC} apt-get update failed after adding Docker repo."
+    return 1
+  fi
+
+  echo -e "${GREEN}Docker APT repository configured (${distro_path} ${codename}).${NC}"
+  return 0
 }
 
 # Installer: Debian/Ubuntu via apt
@@ -93,14 +136,27 @@ install_compose_apt() {
 
   echo -e "${GREEN}Installing Docker Compose (requires sudo)...${NC}"
 
-  # Try the modern plugin first
+  # Try the modern plugin first from current repos
   if sudo apt-get update && sudo apt-get install -y docker-compose-plugin; then
-    return 0
+    if docker compose version >/dev/null 2>&1; then
+      return 0
+    fi
+  fi
+
+  # Configure Docker's official repo and retry (per docs)
+  if configure_docker_apt_repository; then
+    if sudo apt-get install -y docker-compose-plugin; then
+      if docker compose version >/dev/null 2>&1; then
+        return 0
+      fi
+    fi
   fi
 
   # Fallback to legacy docker-compose package if plugin not available
   if sudo apt-get install -y docker-compose; then
-    return 0
+    if command_exists docker-compose; then
+      return 0
+    fi
   fi
 
   echo -e "${RED}Failed to install Docker Compose via apt. Please install it manually.${NC}"
@@ -209,47 +265,14 @@ done
 
 echo -e "\n# Swetrix API configuration" >> .env
 
-# JWT tokens
+# Secret key base
 echo
-read -e -p "Enter JWT_ACCESS_TOKEN_SECRET (press Enter to auto-generate): " jwt_access
-if [ -z "$jwt_access" ]; then
-  jwt_access=$(generate_random_string)
-  echo -e "${GREEN}Generated JWT_ACCESS_TOKEN_SECRET${NC}"
+read -e -p "Enter SECRET_KEY_BASE (press Enter to auto-generate): " secret_key_base
+if [ -z "$secret_key_base" ]; then
+  secret_key_base=$(generate_random_string)
+  echo -e "${GREEN}Generated SECRET_KEY_BASE${NC}"
 fi
-echo "JWT_ACCESS_TOKEN_SECRET=$jwt_access" >> .env
-
-echo
-read -e -p "Enter JWT_REFRESH_TOKEN_SECRET (press Enter to auto-generate): " jwt_refresh
-if [ -z "$jwt_refresh" ]; then
-  jwt_refresh=$(generate_random_string)
-  echo -e "${GREEN}Generated JWT_REFRESH_TOKEN_SECRET${NC}"
-fi
-echo "JWT_REFRESH_TOKEN_SECRET=$jwt_refresh" >> .env
-
-# Email
-while true; do
-  echo
-  read -e -p "Enter admin EMAIL (required): " email
-  if [ -n "$email" ]; then
-    echo "EMAIL=$email" >> .env
-    break
-  else
-    echo -e "${RED}Email is required. Please enter a value.${NC}"
-  fi
-done
-
-# Password
-while true; do
-  echo
-  read -s -p "Enter admin PASSWORD (required, min 8 characters): " password
-  echo
-  if [ ${#password} -ge 8 ]; then
-    echo "PASSWORD=$password" >> .env
-    break
-  else
-    echo -e "${RED}Password must be at least 8 characters long.${NC}"
-  fi
-done
+echo "SECRET_KEY_BASE=$secret_key_base" >> .env
 
 # Cloudflare proxy
 echo
@@ -263,8 +286,8 @@ fi
 
 # Debug mode (always false)
 echo "DEBUG_MODE=false" >> .env
-echo "API_KEY=" >> .env
 echo "IP_GEOLOCATION_DB_PATH=" >> .env
+echo "DISABLE_REGISTRATION=true" >> .env
 
 echo -e "\n\n# Keep these empty unless you manually set passwords for your databases" >> .env
 echo "REDIS_PASSWORD=" >> .env
