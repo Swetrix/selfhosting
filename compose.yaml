@@ -51,6 +51,7 @@ services:
       # Redis and Clickhouse are required for the API to work
       - REDIS_HOST=redis
       - CLICKHOUSE_HOST=http://clickhouse
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
     links:
       - "redis"
       - "clickhouse"
