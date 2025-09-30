@@ -52,6 +52,7 @@ services:
       - REDIS_HOST=redis
       - CLICKHOUSE_HOST=http://clickhouse
       - CLICKHOUSE_PASSWORD
+      - REDIS_PASSWORD
     links:
       - "redis"
       - "clickhouse"
