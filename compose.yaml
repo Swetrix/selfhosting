@@ -5,10 +5,8 @@ services:
     restart: always
     depends_on:
       - swetrix-api
-    ports:
-      - "80:3000"
     environment:
-      - API_URL=${API_URL}
+      - API_URL=/api
     healthcheck:
       test:
         [
@@ -23,8 +21,6 @@ services:
     image: swetrix/swetrix-api:v4.1.0
     restart: always
     container_name: swetrix-api
-    ports:
-      - "8080:5005"
     environment:
       # Configurable with .env file
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
@@ -114,6 +110,17 @@ services:
       nofile:
         soft: 262144
         hard: 262144
+
+  nginx-proxy:
+    image: nginx:1.29.4-alpine
+    restart: always
+    links:
+      - "swetrix-api"
+      - "swetrix"
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/config:/etc/nginx/conf.d/default.conf
 volumes:
   swetrix-events-data:
     driver: local
