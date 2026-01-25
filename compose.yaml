@@ -6,7 +6,7 @@ services:
     depends_on:
       - swetrix-api
     environment:
-      - API_URL=/api
+      - API_URL=/backend
     healthcheck:
       test:
         [
