@@ -251,15 +251,16 @@ echo -e "${GREEN}Creating new .env file...${NC}"
 
 echo -e "# Swetrix Frontend configuration" > .env
 
-# API_URL
+# BASE_URL
 while true; do
-	echo
-  read -e -p "Enter API_URL of your Swetrix API instance (required, e.g., https://api.swetrix.example.com): " api_url
-  if [ -n "$api_url" ]; then
-    echo "API_URL=$api_url" >> .env
+  echo
+  read -e -p "Enter public URL of your Swetrix instance (required, e.g., https://swetrix.example.com): " base_url
+  if [ -n "$base_url" ]; then
+    base_url="${base_url%/}"
+    echo "BASE_URL=$base_url" >> .env
     break
   else
-    echo -e "${RED}API_URL is required. Please enter a value.${NC}"
+    echo -e "${RED}BASE_URL is required. Please enter a value.${NC}"
   fi
 done
 

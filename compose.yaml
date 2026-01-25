@@ -6,7 +6,7 @@ services:
     depends_on:
       - swetrix-api
     environment:
-      - API_URL=/backend
+      - BASE_URL=${BASE_URL}
     healthcheck:
       test:
         [
@@ -114,6 +114,11 @@ services:
   nginx-proxy:
     image: nginx:1.29.4-alpine
     restart: always
+    depends_on:
+      swetrix:
+        condition: service_healthy
+      swetrix-api:
+        condition: service_healthy
     links:
       - "swetrix-api"
       - "swetrix"
