@@ -20,7 +20,7 @@ git clone https://github.com/swetrix/selfhosting
 cd selfhosting
 ```
 2. [Install Docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04?ref=swetrix.com) if you haven't already.
-3. Configure the environment variables for your Swetrix instance. It can be easily done by running `./configure.sh` script, which will ask you to provide the necessary values (including `BASE_URL`) and generate a `.env` file with them. A table explaining what each value means can be found [here](https://docs.swetrix.com/selfhosting/configuring).
+3. Configure the environment variables for your Swetrix instance. It can be easily done by running `./configure.sh` script, which will ask you to provide the necessary values (including `BASE_URL`) and generate a `.env` file with them. See the [configuration variable reference](https://docs.swetrix.com/selfhosting/configuring).
 4. Run `docker compose up -d` to start the Swetrix services.
 5. After that, you will be able to access Swetrix web portal at the URL you set in `BASE_URL` (by default, `http://localhost`).
 
