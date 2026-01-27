@@ -27,7 +27,6 @@ services:
       - DISABLE_REGISTRATION
       - IP_GEOLOCATION_DB_PATH
       - DEBUG_MODE
-      - CLOUDFLARE_PROXY_ENABLED
 
       # Emails configuration (SMTP)
       - SMTP_HOST

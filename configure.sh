@@ -275,16 +275,6 @@ if [ -z "$secret_key_base" ]; then
 fi
 echo "SECRET_KEY_BASE=$secret_key_base" >> .env
 
-# Cloudflare proxy
-echo
-read -p "Enable Cloudflare proxy? (y/N): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "CLOUDFLARE_PROXY_ENABLED=true" >> .env
-else
-  echo "CLOUDFLARE_PROXY_ENABLED=false" >> .env
-fi
-
 # Debug mode (always false)
 echo "DEBUG_MODE=false" >> .env
 echo "IP_GEOLOCATION_DB_PATH=" >> .env
