@@ -256,7 +256,7 @@ while true; do
   echo
   read -e -p "Enter public URL of your Swetrix instance (required, e.g., https://swetrix.example.com): " base_url
   if [ -n "$base_url" ]; then
-    base_url="${base_url%/}"
+    base_url="$(echo "$base_url" | sed 's:/*$::')"
     echo "BASE_URL=$base_url" >> .env
     break
   else
