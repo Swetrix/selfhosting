@@ -251,15 +251,16 @@ echo -e "${GREEN}Creating new .env file...${NC}"
 
 echo -e "# Swetrix Frontend configuration" > .env
 
-# API_URL
+# BASE_URL
 while true; do
-	echo
-  read -e -p "Enter API_URL of your Swetrix API instance (required, e.g., https://api.swetrix.example.com): " api_url
-  if [ -n "$api_url" ]; then
-    echo "API_URL=$api_url" >> .env
+  echo
+  read -e -p "Enter public URL of your Swetrix instance (required, e.g., https://swetrix.example.com): " base_url
+  if [ -n "$base_url" ]; then
+    base_url="$(echo "$base_url" | sed 's:/*$::')"
+    echo "BASE_URL=$base_url" >> .env
     break
   else
-    echo -e "${RED}API_URL is required. Please enter a value.${NC}"
+    echo -e "${RED}BASE_URL is required. Please enter a value.${NC}"
   fi
 done
 
@@ -273,16 +274,6 @@ if [ -z "$secret_key_base" ]; then
   echo -e "${GREEN}Generated SECRET_KEY_BASE${NC}"
 fi
 echo "SECRET_KEY_BASE=$secret_key_base" >> .env
-
-# Cloudflare proxy
-echo
-read -p "Enable Cloudflare proxy? (y/N): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "CLOUDFLARE_PROXY_ENABLED=true" >> .env
-else
-  echo "CLOUDFLARE_PROXY_ENABLED=false" >> .env
-fi
 
 # Debug mode (always false)
 echo "DEBUG_MODE=false" >> .env
