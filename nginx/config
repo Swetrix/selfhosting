@@ -33,8 +33,9 @@ server {
     # Proxy buffering (prevents truncated responses for large files)
     proxy_buffering                    on;
     proxy_buffer_size                  256k;
-    proxy_buffers                      32 512k;
-    proxy_busy_buffers_size            4m;
+    proxy_buffers                      64 512k;
+    proxy_busy_buffers_size            16m;
+    proxy_temp_file_write_size         16m;
     proxy_max_temp_file_size           1024m;
   }
 
@@ -55,8 +56,9 @@ server {
     # Proxy buffering (prevents truncated responses for large files)
     proxy_buffering                    on;
     proxy_buffer_size                  256k;
-    proxy_buffers                      32 512k;
-    proxy_busy_buffers_size            4m;
+    proxy_buffers                      64 512k;
+    proxy_busy_buffers_size            16m;
+    proxy_temp_file_write_size         16m;
     proxy_max_temp_file_size           1024m;
   }
 
