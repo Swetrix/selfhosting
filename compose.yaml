@@ -1,7 +1,7 @@
 services:
   # This is Swetrix user interface application, it's used to display the analytics data, render charts, etc.
   swetrix:
-    image: swetrix/swetrix-fe:v5.0.3
+    image: swetrix/swetrix-fe:v5.1.0
     restart: always
     depends_on:
       - swetrix-api
@@ -9,16 +9,13 @@ services:
       - BASE_URL=${BASE_URL}
     healthcheck:
       test:
-        [
-          "CMD-SHELL",
-          "wget --no-verbose --tries=1 --spider http://localhost:3000/ping || exit 1",
-        ]
+        ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/ping || exit 1"]
       interval: 30s
       start_period: 15s
 
   # This is Swetrix API, it's purpose is to collect incoming analytical events and serve the data to the UI
   swetrix-api:
-    image: swetrix/swetrix-api:v5.0.3
+    image: swetrix/swetrix-api:v5.1.0
     restart: always
     container_name: swetrix-api
     environment:
@@ -58,10 +55,7 @@ services:
         condition: service_healthy
     healthcheck:
       test:
-        [
-          "CMD-SHELL",
-          "wget --no-verbose --tries=1 --spider http://localhost:5005/ping || exit 1",
-        ]
+        ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5005/ping || exit 1"]
       interval: 30s
       start_period: 15s
 
@@ -86,11 +80,7 @@ services:
       - CLICKHOUSE_PORT=8123
       - CLICKHOUSE_PASSWORD
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1",
-        ]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1"]
       interval: 30s
       start_period: 1m
     restart: always
