@@ -26,6 +26,10 @@ generate_random_string() {
   openssl rand -base64 48
 }
 
+generate_random_hex() {
+  openssl rand -hex 32
+}
+
 # Helper: check if command exists
 command_exists() {
   command -v "$1" >/dev/null 2>&1
@@ -280,9 +284,12 @@ echo "DEBUG_MODE=false" >> .env
 echo "IP_GEOLOCATION_DB_PATH=" >> .env
 echo "DISABLE_REGISTRATION=true" >> .env
 
-echo -e "\n\n# Keep these empty unless you manually set passwords for your databases" >> .env
+clickhouse_password=$(generate_random_hex)
+
+echo -e "\n\n# Database credentials" >> .env
 echo "REDIS_PASSWORD=" >> .env
-echo "CLICKHOUSE_PASSWORD=" >> .env
+echo "CLICKHOUSE_PASSWORD=$clickhouse_password" >> .env
+echo -e "${GREEN}Generated CLICKHOUSE_PASSWORD${NC}"
 
 echo -e "\n${GREEN}Configuration complete! .env file has been created.${NC}"
 echo -e "${YELLOW}Note: Make sure to review the .env file before starting the application.${NC}"
