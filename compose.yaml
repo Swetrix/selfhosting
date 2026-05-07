@@ -1,7 +1,7 @@
 services:
   # This is Swetrix user interface application, it's used to display the analytics data, render charts, etc.
   swetrix:
-    image: swetrix/swetrix-fe:v5.1.1
+    image: swetrix/swetrix-fe:v5.2.0
     restart: always
     depends_on:
       - swetrix-api
@@ -15,7 +15,7 @@ services:
 
   # This is Swetrix API, it's purpose is to collect incoming analytical events and serve the data to the UI
   swetrix-api:
-    image: swetrix/swetrix-api:v5.1.1
+    image: swetrix/swetrix-api:v5.2.0
     restart: always
     container_name: swetrix-api
     environment:
@@ -44,7 +44,10 @@ services:
       # Redis and Clickhouse are required for the API to work
       - REDIS_HOST=redis
       - CLICKHOUSE_HOST=http://clickhouse
-      - CLICKHOUSE_PASSWORD
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PORT=8123
+      - CLICKHOUSE_DATABASE=analytics
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in .env}
       - REDIS_PASSWORD
     links:
       - "redis"
@@ -61,7 +64,7 @@ services:
       start_period: 15s
 
   redis:
-    image: redis:8.2-alpine
+    image: redis:8.6-alpine
     restart: always
     environment:
       - REDIS_PORT=6379
@@ -73,13 +76,12 @@ services:
       start_period: 1m
 
   clickhouse:
-    image: clickhouse/clickhouse-server:24.10-alpine
+    image: clickhouse/clickhouse-server:25.8-alpine
     container_name: clickhouse
     environment:
-      - CLICKHOUSE_DATABASE=analytics
+      - CLICKHOUSE_DB=analytics
       - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PORT=8123
-      - CLICKHOUSE_PASSWORD
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in .env}
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1"]
       interval: 30s
@@ -102,7 +104,7 @@ services:
         hard: 262144
 
   nginx-proxy:
-    image: nginx:1.29.4-alpine
+    image: nginx:1.29.8-alpine
     restart: always
     depends_on:
       swetrix:
