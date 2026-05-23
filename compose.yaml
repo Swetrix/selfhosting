@@ -104,7 +104,7 @@ services:
         hard: 262144
 
   nginx-proxy:
-    image: nginx:1.31.0-alpine
+    image: nginx:1.31.1-alpine
     restart: always
     depends_on:
       swetrix:
