@@ -291,5 +291,21 @@ echo "REDIS_PASSWORD=" >> .env
 echo "CLICKHOUSE_PASSWORD=$clickhouse_password" >> .env
 echo -e "${GREEN}Generated CLICKHOUSE_PASSWORD${NC}"
 
+cat >> .env <<'EOF'
+
+# Optional session replay storage
+# https://swetrix.com/docs/selfhosting/session-replays
+SESSION_REPLAY_S3_ENDPOINT=
+SESSION_REPLAY_S3_BUCKET=
+SESSION_REPLAY_S3_REGION=
+SESSION_REPLAY_S3_ACCESS_KEY_ID=
+SESSION_REPLAY_S3_SECRET_ACCESS_KEY=
+SESSION_REPLAY_S3_FORCE_PATH_STYLE=false
+SESSION_REPLAY_EXPORT_CONCURRENCY=1
+SESSION_REPLAY_EXPORT_TTL_SECONDS=86400
+EOF
+
 echo -e "\n${GREEN}Configuration complete! .env file has been created.${NC}"
 echo -e "${YELLOW}Note: Make sure to review the .env file before starting the application.${NC}"
+echo "To enable session replays, fill in the optional storage settings in .env."
+echo "Setup guide: https://swetrix.com/docs/selfhosting/session-replays"

@@ -17,6 +17,7 @@ server {
 
   # Keep /backend/ prefix; this is used to route requests to the Swetrix API.
   location /backend/ {
+    client_max_body_size 15m;
     proxy_pass http://swetrix-api:5005/;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
