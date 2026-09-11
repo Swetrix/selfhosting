@@ -25,3 +25,46 @@ cd selfhosting
 5. After that, you will be able to access Swetrix web portal at the URL you set in `BASE_URL` (by default, `http://localhost`).
 
 And that's it! :) If you have any questions, feel free to join our [Discord community](https://discord.gg/ZVK8Tw2E8j). You can also star our [main repository](https://github.com/Swetrix/swetrix) as a token of appreciation.
+
+## Session replays
+
+Community Edition supports session recording, playback, and MP4 exports with your own private S3-compatible bucket. These settings require API and frontend images from a release containing CE session replay support; update the image tags in `compose.yaml` when that release is available.
+
+Create a private bucket and credentials with permission to read, write, and delete its objects. Add the storage settings to your `.env`, for example with AWS S3:
+
+```dotenv
+SESSION_REPLAY_S3_ENDPOINT=https://s3.eu-west-1.amazonaws.com
+SESSION_REPLAY_S3_BUCKET=swetrix-replays
+SESSION_REPLAY_S3_REGION=eu-west-1
+SESSION_REPLAY_S3_ACCESS_KEY_ID=your-access-key
+SESSION_REPLAY_S3_SECRET_ACCESS_KEY=your-secret-key
+SESSION_REPLAY_S3_FORCE_PATH_STYLE=false
+```
+
+Use the S3 API endpoint without the bucket name or an object path. For MinIO, use a reachable API endpoint such as `http://minio:9000`, region `us-east-1`, and `SESSION_REPLAY_S3_FORCE_PATH_STYLE=true`. For Cloudflare R2, use `https://YOUR_ACCOUNT_ID.r2.cloudflarestorage.com`, region `auto`, and path style `true`. For Hetzner, the region is inferred from its location endpoint when left blank.
+
+Compose forwards these variables to the API container. The generated and example environment files include optional replay settings; existing installations can add them manually. Keep credentials on the server. The bucket does not need public access or browser CORS rules, and ordinary analytics works without replay storage.
+
+After updating the images and configuration, recreate the API and frontend containers and apply the Nginx configuration:
+
+```bash
+docker compose up -d --force-recreate swetrix-api swetrix nginx-proxy
+```
+
+The included Nginx configuration allows replay uploads up to 15 MiB. Apply the same upload limit to any additional reverse proxy in front of Swetrix. The API startup initialiser creates the replay metadata table and adds the project retention setting for both new and existing CE databases.
+
+Start recording explicitly from your website after initialising a current Swetrix tracker:
+
+```javascript
+swetrix.init("YOUR_PROJECT_ID", {
+  apiURL: "https://analytics.example.com/backend",
+});
+
+await swetrix.startSessionReplay({ privacy: "total" });
+```
+
+Watch recordings in the project's **Replays** tab. Retention defaults to 30 days and can be changed to 90 days, 1 year, or 5 years in **Project Settings > Session replays**. Keep the primary API node running for expiry cleanup, and back up both ClickHouse and the bucket.
+
+MP4 exports run on the API server with a default concurrency of `1`. `SESSION_REPLAY_EXPORT_CONCURRENCY` controls parallel renders, and `SESSION_REPLAY_EXPORT_TTL_SECONDS` controls how long generated MP4 files remain available (default: 24 hours). Allow additional CPU, RAM, and temporary disk space for exports.
+
+See the [session replay setup guide](https://swetrix.com/docs/selfhosting/session-replays) for storage permissions, retention, privacy settings, and troubleshooting.
