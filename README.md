@@ -28,7 +28,7 @@ And that's it! :) If you have any questions, feel free to join our [Discord comm
 
 ## Session replays
 
-Community Edition supports session recording, playback, and MP4 exports with your own private S3-compatible bucket. These settings require API and frontend images from a release containing CE session replay support; update the image tags in `compose.yaml` when that release is available.
+Community Edition supports session recording, playback, and MP4 exports with your own private S3-compatible bucket. Use matching API and frontend release versions that include CE session replay support.
 
 Create a private bucket and credentials with permission to read, write, and delete its objects. Add the storage settings to your `.env`, for example with AWS S3:
 
@@ -45,13 +45,15 @@ Use the S3 API endpoint without the bucket name or an object path. For MinIO, us
 
 Compose forwards these variables to the API container. The generated and example environment files include optional replay settings; existing installations can add them manually. Keep credentials on the server. The bucket does not need public access or browser CORS rules, and ordinary analytics works without replay storage.
 
-After updating the images and configuration, recreate the API and frontend containers and apply the Nginx configuration:
+When upgrading an existing installation, follow the [release notes](https://github.com/Swetrix/swetrix/releases) for any required migrations and upgrade steps.
+
+After changing the replay configuration, recreate the API, frontend and Nginx containers:
 
 ```bash
 docker compose up -d --force-recreate swetrix-api swetrix nginx-proxy
 ```
 
-The included Nginx configuration allows replay uploads up to 15 MiB. Apply the same upload limit to any additional reverse proxy in front of Swetrix. The API startup initialiser creates the replay metadata table and adds the project retention setting for both new and existing CE databases.
+The included Nginx configuration allows replay uploads up to 15 MiB. Apply the same upload limit to any additional reverse proxy in front of Swetrix.
 
 Start recording explicitly from your website after initialising a current Swetrix tracker:
 
